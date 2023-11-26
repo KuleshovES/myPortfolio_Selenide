@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="checkDriver">
+    <test verbose="2" preserve-order="true"
+          name="C:/EvgLearn/myTestProject/myProject/src/test/java/tests/UI/TestsUIWithCards.java">
+        <classes>
+            <class name="org.trelloproject.tests.UI.TestsUIWithCards">
+                <methods>
+                    <include name="createCardUI"/>
+                    <include name="updateCardUI"/>
+                    <include name="copyCardUI"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

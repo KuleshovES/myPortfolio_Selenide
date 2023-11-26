@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <test verbose="2" preserve-order="true" name="C:/EvgLearn/myTestProject/myProject/src/test/java/tests">
+        <classes>
+            <class name="org.trelloproject.tests.api.OtherTests">
+                <methods>
+                    <include name="getInfoAboutMe"/>
+                    <include name="checkGetCard"/>
+                    <include name="checkGetColumn"/>
+                    <include name="checkCreateBoard"/>
+                </methods>
+            </class>
+            <class name="org.trelloproject.tests.api.TestBoards">
+                <methods>
+                    <include name="createBoard"/>
+                    <include name="createColumns"/>
+                </methods>
+            </class>
+            <class name="org.trelloproject.tests.api.TestCards">
+                <methods>
+                    <include name="createCards"/>
+                    <include name="updateCard"/>
+                </methods>
+            </class>
+            <class name="org.trelloproject.tests.UI.TestUIAuthorization">
+                <methods>
+                    <include name="sigInUI"/>
+                    <include name="logOutUI"/>
+                </methods>
+            </class>
+            <class name="org.trelloproject.tests.UI.TestsUIWithBoards">
+                <methods>
+                    <include name="createBoardSimpleUI"/>
+                    <include name="createBoardWithTemplateUI"/>
+                    <include name="updateBoardUI"/>
+                    <include name="showClosedBoards"/>
+                </methods>
+            </class>
+            <class name="org.trelloproject.tests.UI.TestsUIWithCards">
+                <methods>
+                    <include name="createCardUI"/>
+                    <include name="updateCardUI"/>
+                    <include name="copyCardUI"/>
+                    <include name="deleteCardUI"/>
+                    <include name="dragCardUI"/>
+                    <include name="addLabelToCardUI"/>
+                    <include name="filteredCardOnBoardUI"/>
+                </methods>
+            </class>
+            <class name="org.trelloproject.tests.UI.TestsUIWithColumns">
+                <methods>
+                    <include name="createColumnUI"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
