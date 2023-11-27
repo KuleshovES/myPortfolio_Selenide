@@ -1,38 +1,45 @@
 package org.trelloproject.tests.UI;
 
+import io.qameta.allure.*;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
+//import org.trelloproject.helpers.TestExecutionListener;
+import org.trelloproject.pages.LoginPage;
 import org.trelloproject.robots.BaseRobot;
 import org.trelloproject.robots.BoardRobot;
 import org.trelloproject.entities.Board;
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Flaky;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-import org.trelloproject.ConfProperties;
 import org.trelloproject.robots.api.RestApiRobot;
+import static com.codeborne.selenide.Selenide.*;
+import com.codeborne.selenide.*;
 
-import static org.trelloproject.ConfProperties.driver;
-
+//@Listeners(TestExecutionListener.class)
 public class TestsUIWithBoards {
-    private BaseRobot baseRobot = new BaseRobot();
-    private BoardRobot boardRobot = new BoardRobot();
+    private final BaseRobot baseRobot = new BaseRobot();
+    private final BoardRobot boardRobot = new BoardRobot();
     private final String defaultBoardName = "MyTestBoard";
     private final String defaultColumnName = "Backlog";
     private final String defaultFirstCardName = "FirstTask";
     private final String defaultSecondCardName = "SecondTask";
+
+    @BeforeMethod
+    public void logIn() throws InterruptedException {
+        LoginPage.login();
+        Configuration.reportsFolder = "test-result/reports";
+        //ScreenShooter.captureSuccessfulTests = true;
+
+    }
 
     @Epic(value = "UI")
     @Feature(value = "Tests with Boards")
     @Description(value = "Test check create Board without template By UI")
     @Test
     public void createBoardSimpleUI() throws InterruptedException {
-        //precondition
-        driver = ConfProperties.preconditionWithLogin();
-
         baseRobot.createBoardByUI(defaultBoardName);
         Assert.assertEquals(defaultBoardName, baseRobot.getNameFirstBoardByUI());
+
     }
 
     @Epic(value = "UI")
@@ -41,12 +48,8 @@ public class TestsUIWithBoards {
     @Flaky
     @Test
     public void createBoardWithTemplateUI() throws InterruptedException {
-        //precondition
-        driver = ConfProperties.preconditionWithLogin();
-
         baseRobot.createTemplateBoardByUI(defaultBoardName);
         Assert.assertEquals(defaultBoardName, baseRobot.getNameFirstBoardByUI());
-
     }
 
     @Epic(value = "UI")
@@ -54,14 +57,10 @@ public class TestsUIWithBoards {
     @Description(value = "Test check update Board By UI")
     @Test
     public void updateBoardUI() throws InterruptedException {
-        //precondition
-        driver = ConfProperties.preconditionWithLogin();
-
         String newBoardName = "new name";
         Board newBoard = boardRobot.createFullBoardByRest(defaultBoardName, defaultColumnName, defaultFirstCardName, defaultSecondCardName);
-        boardRobot.updateBoardNameByUI(newBoard,newBoardName);
+        boardRobot.updateBoardNameByUI(newBoard, newBoardName);
         Assert.assertNotEquals(defaultBoardName, boardRobot.getNameBoardUI());
-
     }
 
     @Epic(value = "UI")
@@ -71,9 +70,6 @@ public class TestsUIWithBoards {
     public void showClosedBoards() throws InterruptedException {
         //precondition unusual
         Board newBoard = boardRobot.createFullBoardByRest(defaultBoardName, defaultColumnName, defaultFirstCardName, defaultSecondCardName);
-
-        driver = ConfProperties.preconditionWithLogin();
-
         boardRobot.closedBoardByRest(newBoard.getId());
         Assert.assertTrue(baseRobot.showClosedBoardByUI());
 
@@ -82,8 +78,7 @@ public class TestsUIWithBoards {
     @AfterMethod
     public void clearAndCloseAfterTest() throws InterruptedException {
         RestApiRobot.closedAllBoards();
-        Thread.sleep(5000);
-        driver.close();
+        closeWebDriver();
     }
 
 }

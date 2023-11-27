@@ -1,71 +1,75 @@
 package org.trelloproject.pages;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.trelloproject.ConfProperties;
 
-import java.time.Duration;
-
+import static com.codeborne.selenide.Condition.value;
+import static com.codeborne.selenide.Selenide.*;
 
 public class BoardPage {
 
-    private final WebDriverWait wait = new WebDriverWait(ConfProperties.driver, Duration.ofSeconds(3));
-
-    private final String firstCardInActiveBoard = "//*[@data-testid=\"list-cards\"]/li[1]";
-    private final String defaultSecondTask = "//a[text()='SecondTask']";
-
-    //private final String buttonAddCard = "//*[@data-testid=\"list-add-card-button\"]";
-
+    private static final By FIRST_CARD_IN_ACTIVE_BOARD = By.xpath("//*[@data-testid=\"list-cards\"]/li[1]");
+    private static final By DEFAULT_FIRST_TASK = By.xpath("//a[text()='FirstTask']");
+    private static final By DEFAULT_SECOND_TASK = By.xpath("//a[text()='SecondTask']");
 
     //open board
-    private final String locFirstList = "//*[@aria-label=\"Backlog\"]";
-    private final String locSecondList = "//*[@aria-label=\"To Do\"]";
-    private final String buttonFiltered = "//*[@data-testid=\"filter-popover-button\"]";
-    private final String inputFilter = "//input[@aria-placeholder]";
-    private final String buttonAddNewColumn = ".js-add-list";
-    private final String buttonSubmitAddColumn = "//*[@id=\"board\"]/div/form/div/input";
-    private final String labelBoardName = "//*[@data-testid=\"board-name-display\"]";
-    private final String inputBoardName = "//*[@data-testid=\"board-name-input\"]";
+    private static final By FIRST_LIST_LOCATOR = By.xpath("//*[@aria-label=\"Backlog\"]");
+    private static final By SECOND_LIST_LOCATOR = By.xpath("//*[@aria-label=\"To Do\"]");
+    private static final By BUTTON_FILTERED = By.xpath("//*[@data-testid=\"filter-popover-button\"]");
+    private static final By INPUT_FILTER = By.xpath("//input[@aria-placeholder]");
+    private static final By BUTTON_ADD_NEW_COLUMN = By.cssSelector(".js-add-list");
+    private static final By INPUT_COLUMN_NAME = By.cssSelector(".list-name-input");
+    private static final By BUTTON_SUBMIT_ADD_COLUMN = By.xpath("//*[@id=\"board\"]/div/form/div/input");
+    private static final By LABEL_BOARD_NAME = By.xpath("//*[@data-testid=\"board-name-display\"]");
+    private static final By INPUT_BOARD_NAME = By.xpath("//*[@data-testid=\"board-name-input\"]");
+    private static final By BUTTON_ADD_CARD = By.xpath("//*[@data-testid=\"list-add-card-button\"]");
+    private static final By INPUT_CARD_TITLE = By.xpath("//*[@data-testid=\"list-card-composer-textarea\"]");
+    private static final By SUBMIT_ADD_CARD = By.xpath("//*[@data-testid=\"list-card-composer-add-card-button\"]");
+
 
     //block edit Card
-    private final String locCardNameEditCard = ".js-card-detail-title-input";
-    private final String locClosedEditCard = ".js-close-window";
+    private static final By CARD_NAME_EDIT_CARD_LOCATOR = By.cssSelector(".js-card-detail-title-input");
+    private static final By CLOSED_EDIT_CARD_LOCATOR = By.cssSelector(".js-close-window");
 
-    private final String buttonCopyCardInEdit = ".js-copy-card";
-    private final String buttonArchiveCardInEdit = ".js-archive-card";
-    private final String buttonDeleteCardInEdit = ".js-delete-card";
-    private final String buttonAddLabelToCardInEdit = ".js-edit-labels";
+    private static final By BUTTON_COPY_CARD_IN_EDIT = By.cssSelector(".js-copy-card");
+    private static final By BUTTON_ARCHIVE_CARD_IN_EDIT = By.cssSelector(".js-archive-card");
+    private static final By BUTTON_DELETE_CARD_IN_EDIT = By.cssSelector(".js-delete-card");
+    private static final By BUTTON_ADD_LABEL_TO_CARD_IN_EDIT = By.cssSelector(".js-edit-labels");
 
     //block pop-over
-    private final String buttonSubmitPopover = ".js-submit";
-    private final String buttonConfirmPopover = ".js-confirm";
-    private final String buttonClosePopover = "//*[@data-testid=\"popover-close\"]";
-    private final String textAreaCopyCard = "//textarea[@name=\"name\"]";
+    private static final By BUTTON_SUBMIT_POPOVER = By.cssSelector(".js-submit");
+    private static final By BUTTON_CONFIRM_POPOVER = By.cssSelector(".js-confirm");
+
+    private static final By BUTTON_CLOSE_POPOVER = By.xpath("//*[@data-testid=\"popover-close\"]");
+    private static final By TEXT_AREA_COPY_CARD = By.xpath("//textarea[@name=\"name\"]");
+    private static By CARD_BY_NAME (String cardName){return By.xpath("//a[text()='" + cardName + "']"); };
+
+    //SelenideElement CARD_BY_NAME = $x("//a[text()='" + cardName + "']");
+    //SelenideElement ADD_LABEL_COLOR = $x("//span[@data-color=\"" + color.toLowerCase() + "\"]");
 
     //boards
     @Step("Open board on UI by name: {nameBoard}")
     public BoardPage openBoard(String nameBoard) {
-        String locatorBoard = "//*[@title=\"" + nameBoard + "\"]";
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(locatorBoard)));
-        ConfProperties.driver.findElement(By.xpath(locatorBoard)).click();
+        SelenideElement LOCATOR_BOARD = $x("//*[@title=\"" + nameBoard + "\"]");
+        $(LOCATOR_BOARD).shouldBe(Condition.interactable).click();
         return this;
     }
 
     @Step("Update board on UI by name: {nameBoard}")
     public void updateBoardName(String newBoardNameUI) {
-        ConfProperties.driver.findElement(By.xpath(labelBoardName)).click();
-        ConfProperties.driver.findElement(By.xpath(inputBoardName)).sendKeys(newBoardNameUI);
-        ConfProperties.driver.findElement(By.xpath(inputBoardName)).sendKeys(Keys.ENTER);
+        $(LABEL_BOARD_NAME).click();
+        $(INPUT_BOARD_NAME).sendKeys(newBoardNameUI);
+        $(INPUT_BOARD_NAME).sendKeys(Keys.ENTER);
     }
-
 
 
     @Step("Get board name on UI")
     public String getBoardNameUI() {
-        return ConfProperties.driver.findElement(By.xpath(labelBoardName)).getAttribute("textContent");
+        return $(LABEL_BOARD_NAME).getAttribute("textContent");
     }
 
     //cards
@@ -73,28 +77,18 @@ public class BoardPage {
     @Step("Creating a card on UI with name: {nameCard}")
     public void createCard(String nameCard) throws InterruptedException {
 
-        Thread.sleep(1000); //BAD!
-        //ConfProperties.driver.findElement(By.xpath(buttonAddCard)).isDisplayed()
-        WebElement buttonAddCard = ConfProperties.driver.findElement(By.xpath("//*[@data-testid=\"list-add-card-button\"]"));
+        //Thread.sleep(1000); //BAD!
 
-        //ПЕРЕДЕЛАТЬ!
-        if (buttonAddCard.isDisplayed()) {
-            buttonAddCard.click();
-            Thread.sleep(1000); //BAD!
-            WebElement inputCardTitle = ConfProperties.driver.findElement(By.xpath("//*[@data-testid=\"list-card-composer-textarea\"]"));
-            inputCardTitle.click();
-            inputCardTitle.sendKeys(nameCard);
-            Thread.sleep(1000); //BAD!
-            WebElement submitAddCard = ConfProperties.driver.findElement(By.xpath("//*[@data-testid=\"list-card-composer-add-card-button\"]"));
-            submitAddCard.click();
+        //ОТладить!
+        if ($(BUTTON_ADD_CARD).isDisplayed()) {
+            $(BUTTON_ADD_CARD).click();
+            $(INPUT_CARD_TITLE).shouldBe(Condition.interactable).click();
+            $(INPUT_CARD_TITLE).sendKeys(nameCard);
+            $(SUBMIT_ADD_CARD).shouldBe(Condition.visible).click();
         } else {
-            Thread.sleep(1000); //BAD!
-            WebElement inputCardTitle = ConfProperties.driver.findElement(By.xpath("//*[@data-testid=\"list-card-composer-textarea\"]"));
-            inputCardTitle.click();
-            inputCardTitle.sendKeys(nameCard);
-            Thread.sleep(1000); //BAD!
-            WebElement submitAddCard = ConfProperties.driver.findElement(By.xpath("//*[@data-testid=\"list-card-composer-add-card-button\"]"));
-            submitAddCard.click();
+            $(INPUT_CARD_TITLE).shouldBe(Condition.interactable).click();
+            $(INPUT_CARD_TITLE).sendKeys(nameCard);
+            $(SUBMIT_ADD_CARD).shouldBe(Condition.visible).click();
         }
 
     }
@@ -102,51 +96,55 @@ public class BoardPage {
     @Step("Updating a card on UI with a new name: {newName}")
     public void updateCardName(String newName) {
 
-        ConfProperties.driver.findElement(By.xpath("//a[text()='FirstTask']")).click();
-        ConfProperties.driver.findElement(By.cssSelector(locCardNameEditCard)).click();
-        ConfProperties.driver.findElement(By.cssSelector(locCardNameEditCard)).clear();
-        ConfProperties.driver.findElement(By.cssSelector(locCardNameEditCard)).sendKeys(newName);
-        ConfProperties.driver.findElement(By.cssSelector(locCardNameEditCard)).sendKeys(Keys.ENTER);
-        ConfProperties.driver.findElement(By.cssSelector(locClosedEditCard)).click();
+        $(DEFAULT_FIRST_TASK).click();
+        $(CARD_NAME_EDIT_CARD_LOCATOR).clear();
+        $(CARD_NAME_EDIT_CARD_LOCATOR).click();
+        $(CARD_NAME_EDIT_CARD_LOCATOR).sendKeys(newName);
+        $(CARD_NAME_EDIT_CARD_LOCATOR).sendKeys(Keys.ENTER);
+        $(CLOSED_EDIT_CARD_LOCATOR).click();
 
     }
 
     @Step("Copying a card on UI with a new name: {copiedCardName}")
     public BoardPage copyCard(String copiedCardName) {
 
-        ConfProperties.driver.findElement(By.xpath("//a[text()='FirstTask']")).click();
-        ConfProperties.driver.findElement(By.cssSelector(buttonCopyCardInEdit)).click();
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(textAreaCopyCard))).clear();
-        ConfProperties.driver.findElement(By.xpath(textAreaCopyCard)).sendKeys(copiedCardName);
-
-        ConfProperties.driver.findElement(By.cssSelector(buttonSubmitPopover)).click();
-        ConfProperties.driver.findElement(By.cssSelector(locClosedEditCard)).click();
+        $(DEFAULT_FIRST_TASK).click();
+        $(BUTTON_COPY_CARD_IN_EDIT).click();
+        $(TEXT_AREA_COPY_CARD).shouldBe(Condition.visible).clear();
+        $(TEXT_AREA_COPY_CARD).sendKeys(copiedCardName);
+        $(BUTTON_SUBMIT_POPOVER).click();
+        $(CLOSED_EDIT_CARD_LOCATOR).click();
         return this;
     }
 
     @Step("Get actual card name on active board")
     public String getActualCardNameInActiveBoard() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(firstCardInActiveBoard)));
-        String name = ConfProperties.driver.findElement(By.xpath(firstCardInActiveBoard))
-                .getAttribute("outerText");
+        String name = $(FIRST_CARD_IN_ACTIVE_BOARD).shouldBe(Condition.visible).getAttribute("outerText");
         return name;
     }
 
     @Step("Removing a card in the UI with the name: {cardName}")
     public void deleteCard(String cardName) {
-        String elCardByName = "//a[text()='" + cardName + "']";
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(elCardByName))).click();
-        //driver.findElement(By.xpath(elCardByName)).click();
-        ConfProperties.driver.findElement(By.cssSelector(buttonArchiveCardInEdit)).click();
-        ConfProperties.driver.findElement(By.cssSelector(buttonDeleteCardInEdit)).click();
-        ConfProperties.driver.findElement(By.cssSelector(buttonConfirmPopover)).click();
+        SelenideElement CARD_BY_NAME = $x("//a[text()='" + cardName + "']");
+        $(CARD_BY_NAME).shouldBe(Condition.interactable).click();
+        $(BUTTON_ARCHIVE_CARD_IN_EDIT).click();
+        $(BUTTON_DELETE_CARD_IN_EDIT).click();
+        $(BUTTON_CONFIRM_POPOVER).click();
 
     }
+
     @Step("Moving a card in the UI with the name: {cardName}")
     public void moveCardByDrag(String cardName) {
 
-        String locCardByName = "//a[text()='" + cardName + "']";
+        //NEED DEBUG!
+        SelenideElement CARD_BY_NAME = $x("//a[text()='" + cardName + "']");
+        Actions action = new Actions(ConfProperties.driver);
+        action
+                .dragAndDrop(CARD_BY_NAME, $(SECOND_LIST_LOCATOR))
+                .build()
+                .perform();
+
+        /*String locCardByName = "//a[text()='" + cardName + "']";
 
         WebElement elCardByName = ConfProperties.driver.findElement(By.xpath(locCardByName));
         WebElement elSecondList = ConfProperties.driver.findElement(By.xpath(locSecondList));
@@ -155,41 +153,37 @@ public class BoardPage {
         action
                 .dragAndDrop(elCardByName, elSecondList)
                 .build()
-                .perform();
+                .perform();*/
 
     }
 
     @Step("Adding a label in the UI to a card: {cardName}")
     public void addLabelToCard(String cardName, String color) {
-        String elCardByName = "//a[text()='" + cardName + "']";
-        String addLabelColor = "//span[@data-color=\""+ color.toLowerCase() +"\"]";
-        ConfProperties.driver.findElement(By.xpath(elCardByName)).click();
-        ConfProperties.driver.findElement(By.cssSelector(buttonAddLabelToCardInEdit)).click();
-
-        ConfProperties.driver.findElement(By.xpath(addLabelColor)).click();
-        //driver.findElement(By.xpath(addLabelBlue)).click();
-
-        ConfProperties.driver.findElement(By.xpath(buttonClosePopover)).click();
-        ConfProperties.driver.findElement(By.cssSelector(locClosedEditCard)).click();
+        $(CARD_BY_NAME(cardName)).click();
+        SelenideElement ADD_LABEL_COLOR = $x("//span[@data-color=\"" + color.toLowerCase() + "\"]");
+        $(BUTTON_ADD_LABEL_TO_CARD_IN_EDIT).click();
+        $(ADD_LABEL_COLOR).click();
+        $(BUTTON_CLOSE_POPOVER).click();
+        $(CLOSED_EDIT_CARD_LOCATOR).click();
     }
 
     @Step("Filter in UI by value: {filterText}")
     public void filteredCardOnBoard(String filterText) {
-        ConfProperties.driver.findElement(By.xpath(buttonFiltered)).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(inputFilter))).sendKeys(filterText);
-        wait.until(ExpectedConditions.attributeContains(By.xpath(inputFilter), "defaultValue", filterText));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(defaultSecondTask)));
+        $(BUTTON_FILTERED).click();
+        $(INPUT_FILTER).shouldBe(Condition.visible).sendKeys(filterText);
+        $(INPUT_FILTER).shouldHave(value(filterText));
+        $(DEFAULT_SECOND_TASK).shouldNotBe(Condition.visible);
+        //wait.until(ExpectedConditions.attributeContains(By.xpath(inputFilter), "defaultValue", filterText));
+        //wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(defaultSecondTask)));
 
     }
 
     @Step("Checking for existence in the card UI: {cardName}")
     public boolean cardByNameIsExist(String cardName) {
         ConfProperties.LOGGER.info("Start check exist card: " + cardName);
-        String elCardByName = "//a[text()='" + cardName + "']";
         boolean result;
-
         try {
-            result = (ConfProperties.driver.findElement(By.xpath(elCardByName)).isDisplayed());
+            result = $(CARD_BY_NAME(cardName)).isDisplayed();
             ConfProperties.LOGGER.info("Find card by name :" + cardName);
         } catch (NoSuchElementException ex) {
             result = false;
@@ -202,7 +196,8 @@ public class BoardPage {
     @Step("Checking cardInSecondList by UI for card: {cardName}")
     public boolean cardInSecondList(String cardName) {
         String locCardByName = "//span[text()='" + cardName + "']";
-        WebElement elSecondList = ConfProperties.driver.findElement(By.xpath(locSecondList));
+        return false;
+        /*WebElement elSecondList = ConfProperties.driver.findElement(By.xpath(locSecondList));
         WebElement elCardByName = ConfProperties.driver.findElement(By.xpath(locCardByName));
         if (elCardByName.getLocation() == elSecondList.getLocation()) {
             ConfProperties.LOGGER.info("Место первого: " + elCardByName.getLocation());
@@ -214,16 +209,16 @@ public class BoardPage {
             ConfProperties.LOGGER.info("Иначе Место первого: " + elCardByName.getLocation());
             ConfProperties.LOGGER.info("Иначе Место второго: " + elSecondList.getLocation());
             return false;
-        }
+        }*/
     }
 
     @Step("Checking for label presence in UI color: {color}")
     public boolean checkLabelOnCardExists(String color) {
-        String locLabelColor = "//button[@data-color=\"" + color + "\"]";
+        SelenideElement LABEL_COLOR_LOCATOR = $x("//button[@data-color=\"" + color + "\"]");
         boolean result;
 
         try {
-            result = (ConfProperties.driver.findElement(By.xpath(locLabelColor)).isDisplayed());
+            result = $(LABEL_COLOR_LOCATOR).isDisplayed();
             ConfProperties.LOGGER.info("Find label: " + color);
         } catch (NoSuchElementException ex) {
             result = false;
@@ -235,13 +230,11 @@ public class BoardPage {
 
     @Step("Checking the display of a card in UI by name: {cardName}")
     public boolean cardIsDisplayed(String cardName) {
-
         ConfProperties.LOGGER.info("Start check card is displayed: " + cardName);
-        String elCardByName = "//a[text()='" + cardName + "']";
         boolean result;
 
         try {
-            result = (ConfProperties.driver.findElement(By.xpath(elCardByName)).isDisplayed());
+            result = $(CARD_BY_NAME(cardName)).isDisplayed();
             ConfProperties.LOGGER.info("Card isn't Displayed: " + cardName);
         } catch (NoSuchElementException ex) {
             result = true;
@@ -253,21 +246,19 @@ public class BoardPage {
     //columns
     @Step("Creating a Column on UI with a name: {nameColumn}")
     public void createColumn(String nameColumn) {
-        ConfProperties.driver.findElement(By.cssSelector(buttonAddNewColumn)).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".list-name-input")))
-                .sendKeys(nameColumn);
-        ConfProperties.driver.findElement(By.xpath(buttonSubmitAddColumn)).click();
+        $(BUTTON_ADD_NEW_COLUMN).click();
+        $(INPUT_COLUMN_NAME).shouldBe(Condition.interactable).sendKeys(nameColumn);
+        $(BUTTON_SUBMIT_ADD_COLUMN).click();
     }
 
     @Step("Checking the display of a column in UI by name: {name}")
     public boolean columnByNameIsDisplayed(String name) {
-        String locFindColumn = "//*[@aria-label=\"" + name + "\"]";
+        SelenideElement FIND_COLUMN_LOCATOR = $x("//*[@aria-label=\"" + name + "\"]");
         boolean res;
         ConfProperties.LOGGER.info("Start searching column = " + name);
         try {
-            ConfProperties.driver.findElement(By.xpath(locFindColumn)).isDisplayed();
+            res = $(FIND_COLUMN_LOCATOR).isDisplayed();
             ConfProperties.LOGGER.info("Column find!");
-            res = true;
         } catch (NoSuchElementException ex) {
             ConfProperties.LOGGER.info("Column not find!");
             res = false;

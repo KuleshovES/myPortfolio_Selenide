@@ -1,43 +1,32 @@
 package org.trelloproject.pages;
 
+import com.codeborne.selenide.Condition;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.trelloproject.ConfProperties;
-
-import java.time.Duration;
-
+import static com.codeborne.selenide.Selenide.*;
 
 public class LoginPage {
 
     private static String userName = "testuser@senthy.com";
     private static String userPass = "asdfg1234";
-    private static final WebDriverWait wait = new WebDriverWait(ConfProperties.driver, Duration.ofSeconds(10));
 
-    private static String buttonViewAllBoards = "//button[contains(@class, 'view-all-closed-boards-button')]";
+    private static final By USERNAME = By.id("user");
+    private static final By LOGIN = By.id("login");
+    private static final By PASSWORD = By.id("password");
+    private static final By LOGIN_SUBMIT = By.id("login-submit");
+    private static final By BUTTON_VIEW_ALL_BOARDS = By.xpath("//button[contains(@class, 'view-all-closed-boards-button')]");
 
     @Step("LogIn")
     public static void login() throws InterruptedException {
 
-        ConfProperties.driver.get("https://trello.com/en/login");
-        Thread.sleep(1000);
+        open("https://trello.com/en/login");
+        //Thread.sleep(1000);
+        $(USERNAME).shouldBe(Condition.interactable).sendKeys(userName);
+        $(LOGIN).shouldBe(Condition.interactable).click();
+        $(PASSWORD).shouldBe(Condition.interactable).sendKeys(userPass);
+        $(LOGIN_SUBMIT).shouldBe(Condition.interactable).click();
+        $(BUTTON_VIEW_ALL_BOARDS).shouldBe(Condition.visible);
 
-        wait.until(ExpectedConditions.elementToBeClickable(ConfProperties.driver.findElement(By.id("user"))))
-                .sendKeys(userName);
-
-        wait.until(ExpectedConditions.elementToBeClickable(ConfProperties.driver.findElement(By.id("login"))))
-                .click();
-
-        Thread.sleep(1000); //BAD!
-        wait.until(ExpectedConditions.elementToBeClickable(ConfProperties.driver.findElement(By.id("password"))))
-                .sendKeys(userPass);
-
-        wait.until(ExpectedConditions.elementToBeClickable(ConfProperties.driver.findElement(By.id("login-submit"))))
-                .click();
-
-        Thread.sleep(5000); //BAD!
-        //wait.until(ExpectedConditions.elementToBeClickable(By.xpath(buttonViewAllBoards)));
     }
 
 

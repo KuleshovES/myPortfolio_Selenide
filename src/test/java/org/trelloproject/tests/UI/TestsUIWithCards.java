@@ -1,18 +1,15 @@
 package org.trelloproject.tests.UI;
 
+import org.trelloproject.pages.LoginPage;
 import org.trelloproject.robots.BoardRobot;
 import org.trelloproject.entities.Board;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import org.testng.Assert;
-
 import org.testng.annotations.*;
-import org.trelloproject.ConfProperties;
 import org.trelloproject.robots.api.RestApiRobot;
-
-import static org.trelloproject.ConfProperties.driver;
+import static com.codeborne.selenide.Selenide.closeWebDriver;
 
 
 public class TestsUIWithCards {
@@ -23,10 +20,9 @@ public class TestsUIWithCards {
     private final String defaultFirstCardName = "FirstTask";
     private final String defaultSecondCardName = "SecondTask";
 
-
     @BeforeMethod
-    public void openDriver() throws InterruptedException {
-        driver = ConfProperties.preconditionWithLogin();
+    public void logIn() throws InterruptedException {
+        LoginPage.login();
     }
 
     @Epic(value = "UI")
@@ -38,7 +34,6 @@ public class TestsUIWithCards {
         boardRobot.createCardByUI(newBoard, newCardName);
         String actualNameFirstCard = boardRobot.getFirstCardUI();
         Assert.assertEquals(actualNameFirstCard, newCardName);
-
     }
 
     @Epic(value = "UI")
@@ -50,7 +45,6 @@ public class TestsUIWithCards {
         boardRobot.updateCardByUI(newBoard, newCardName);
         String actualNameFirstCard = boardRobot.getFirstCardUI();
         Assert.assertEquals(actualNameFirstCard, newCardName);
-
     }
 
     @Epic(value = "UI")
@@ -62,7 +56,6 @@ public class TestsUIWithCards {
         Board newBoard = boardRobot.createFullBoardByRest(defaultBoardName, defaultColumnName, defaultFirstCardName, defaultSecondCardName);
         boardRobot.copyCardByUI(newBoard, newNameCopiedCard);
         Assert.assertNotEquals(boardRobot.getFirstCardUI(), newNameCopiedCard);
-
     }
 
     @Epic(value = "UI")
@@ -73,7 +66,6 @@ public class TestsUIWithCards {
         Board newBoard = boardRobot.createFullBoardByRest(defaultBoardName, defaultColumnName, defaultFirstCardName, defaultSecondCardName);
         boardRobot.deleteCardByUI(newBoard, defaultFirstCardName);
         Assert.assertFalse(boardRobot.checkingExistenceCardByUI(defaultFirstCardName));
-
     }
 
     @Epic(value = "UI")
@@ -84,7 +76,6 @@ public class TestsUIWithCards {
         Board newBoard = boardRobot.createFullBoardByRest(defaultBoardName, defaultColumnName, defaultFirstCardName, defaultSecondCardName);
         boardRobot.movedCardByUI(newBoard, defaultFirstCardName);
         //TODO assert doesn't work =( need check card in list2
-
     }
 
     @Epic(value = "UI")
@@ -105,13 +96,12 @@ public class TestsUIWithCards {
         Board newBoard = boardRobot.createFullBoardByRest(defaultBoardName, defaultColumnName, defaultFirstCardName, defaultSecondCardName);
         boardRobot.filterCardByUI(newBoard, "First");
         Assert.assertFalse(boardRobot.checkingDisplayCardByUI("SecondTask"));
-
     }
 
     @AfterMethod
     public void clearAndCloseAfterTest() {
         RestApiRobot.closedAllBoards();
-        driver.close();
+        closeWebDriver();
     }
 
 }

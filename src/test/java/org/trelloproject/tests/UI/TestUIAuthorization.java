@@ -1,5 +1,6 @@
 package org.trelloproject.tests.UI;
 
+import org.trelloproject.pages.LoginPage;
 import org.trelloproject.robots.BaseRobot;
 import org.trelloproject.entities.User;
 import io.qameta.allure.Description;
@@ -10,18 +11,17 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.trelloproject.ConfProperties;
 import org.trelloproject.robots.api.RestApiRobot;
+import static com.codeborne.selenide.Selenide.closeWebDriver;
 
-import static org.trelloproject.ConfProperties.driver;
 
 public class TestUIAuthorization {
     private BaseRobot baseRobot = new BaseRobot();
     private User user = new User();
 
     @BeforeMethod
-    public void openDriver() throws InterruptedException {
-        driver = ConfProperties.preconditionWithLogin();
+    public void logIn() throws InterruptedException {
+        LoginPage.login();
     }
 
     @Epic(value = "UI")
@@ -30,7 +30,6 @@ public class TestUIAuthorization {
     @Test
     public void sigInUI() {
         Assert.assertEquals(baseRobot.currentUserNameByUI(), RestApiRobot.getInfoUser(user).getFullName());
-
     }
 
     @Epic(value = "UI")
@@ -40,13 +39,12 @@ public class TestUIAuthorization {
     @Test
     public void logOutUI() throws InterruptedException {
         baseRobot.logOutByUI();
-        Thread.sleep(2000);
+        //Thread.sleep(2000);
         Assert.assertTrue(baseRobot.checkingOpenedMainPageByUI());
-
     }
 
     @AfterMethod
     public void driverClose() {
-        driver.close();
+        closeWebDriver();
     }
 }
